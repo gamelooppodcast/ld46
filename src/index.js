@@ -1,7 +1,9 @@
 let game = new Phaser.Game({
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 400,
+  height: 300,
+  pixelArt: true,
+  zoom: 2,
   physics: {
     default: "arcade",
     arcade: {
@@ -19,20 +21,30 @@ let game = new Phaser.Game({
 });
 
 let villagers;
+let ground;
 
 function update() { }
 
 
 function preload() {
   this.load.image('villager', 'assets/villager.png')
+  this.load.image('platform', 'assets/platform.png')
 }
 
 function create() {
   villagers = this.physics.add.group({
     key: 'villager',
     repeat: 10,
-    setXY: { x: 10, y: 0, stepX: 100 }
+    setXY: { x: 10, y: 0, stepX: 10 }
   })
+
+  // ground = this.physics.add.staticGroup()
+
+  // // ground[0].setScale(3).refreshBody()
+  // ground.create(0, 580, 'platform').setScale(2).refreshBody();
+  // ground.children.iterate((platform) => {
+  //   // platform.setFrictionY(1)
+  // })
 
   villagers.children.iterate((villager) => {
     villager.setCollideWorldBounds(true)
@@ -63,4 +75,6 @@ function create() {
       villager.body.setVelocity(dragDeltaX * 50, dragDeltaY * 50);
     });
   })
+
+  // this.physics.add.collider(villagers, ground)
 }
