@@ -1,47 +1,66 @@
-var config = {
-        type: Phaser.AUTO,
-        width: 800,
-        height: 600,
-        physics: {
-            default: 'arcade',
-            arcade: {
-                gravity: { y: 200 }
-            }
-        },
-        scene: {
-            preload: preload,
-            create: create
-        }
-    };
+let game = new Phaser.Game({
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  physics: {
+    default: "arcade",
+    arcade: {
+      gravity: {
+        y: 300
+      },
+      debug: false,
+    },
+  },
+  scene: {
+    preload,
+    create,
+    update,
+  },
+});
 
-    var game = new Phaser.Game(config);
+let villagers;
 
-    function preload ()
-    {
-        this.load.setBaseURL('https://labs.phaser.io');
+function update() { }
 
-        this.load.image('sky', 'assets/skies/space3.png');
-        this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-        this.load.image('red', 'assets/particles/red.png');
-    }
 
-    function create ()
-    {
-        this.add.image(400, 300, 'sky');
+function preload() {
+  this.load.image('villager', 'assets/villager.png')
+}
 
-        var particles = this.add.particles('red');
+function create() {
+  villagers = this.physics.add.group({
+    key: 'villager',
+    repeat: 10,
+    setXY: { x: 10, y: 0, stepX: 100 }
+  })
 
-        var emitter = particles.createEmitter({
-            speed: 100,
-            scale: { start: 1, end: 0 },
-            blendMode: 'ADD'
-        });
+  villagers.children.iterate((villager) => {
+    villager.setCollideWorldBounds(true)
+    villager.setInteractive({ draggable: true })
 
-        var logo = this.physics.add.image(400, 100, 'logo');
+    let prevDragX = 0;
+    let prevDragY = 0;
+    let dragDeltaX = 0;
+    let dragDeltaY = 0;
 
-        logo.setVelocity(100, 200);
-        logo.setBounce(1, 1);
-        logo.setCollideWorldBounds(true);
+    villager.on("dragstart", (pointer, dragX, dragY) => {
+      villager.body.setAllowGravity(false);
+      prevDragX = dragX;
+      prevDragY = dragY;
+    });
 
-        emitter.startFollow(logo);
-    }
+    villager.on("drag", (pointer, dragX, dragY) => {
+      villager.x = dragX;
+      villager.y = dragY;
+      dragDeltaX = dragX - prevDragX;
+      dragDeltaY = dragY - prevDragY;
+      prevDragX = dragX;
+      prevDragY = dragY;
+    });
+
+    villager.on("dragend", () => {
+      villager.body.setAllowGravity(true);
+      villager.body.setVelocity(dragDeltaX * 50, dragDeltaY * 50);
+    });
+  })
+}
