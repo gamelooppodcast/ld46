@@ -38,17 +38,16 @@ function create() {
     setXY: { x: 10, y: 0, stepX: 10 }
   })
 
-  // ground = this.physics.add.staticGroup()
+  ground = this.physics.add.staticGroup()
 
-  // // ground[0].setScale(3).refreshBody()
-  // ground.create(0, 580, 'platform').setScale(2).refreshBody();
-  // ground.children.iterate((platform) => {
-  //   // platform.setFrictionY(1)
-  // })
+  // ground[0].setScale(3).refreshBody()
+  ground.create(0, 200, 'platform').setScale(2).refreshBody();
+
 
   villagers.children.iterate((villager) => {
     villager.setCollideWorldBounds(true)
     villager.setInteractive({ draggable: true })
+
 
     let prevDragX = 0;
     let prevDragY = 0;
@@ -76,5 +75,9 @@ function create() {
     });
   })
 
-  // this.physics.add.collider(villagers, ground)
+  this.physics.add.collider(villagers, ground, stopVillager)
+}
+
+function stopVillager(villager, ground) {
+  villager.setVelocityX(0)
 }
